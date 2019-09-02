@@ -1,0 +1,36 @@
+calculate cell size based off parent element
+
+generate all cells needed to fill space in array of arrays
+
+notify each cell of an array of its neighbors
+
+"seed" the list of cells to be live and of particular color
+
+each "tick" calculate new cell state based off neighbors
+
+**User interface**
+*start/stop/reset
+*Initialization settings (requires restart)
+population density
+starting colors (random, range, custom colors)
+edge handling(none, wrap)
+*live settings
+iteration speed
+mutation style(average, modulus)
+
+**Modelling**
+*state
+user settings
+cell array array
+*cell
+position
+color
+active (alive, dead)
+
+**Rendering**
+*Initial Render
+render empty cells in grid with position-hashed Ids
+*Fill/Re-render
+change background color to match cell state
+
+**Tick**

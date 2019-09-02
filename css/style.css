@@ -1,0 +1,78 @@
+body {
+  /*box-sizing: border-box;*/
+
+}
+
+div.heading h1 {
+  text-align: center; 
+  margin: 0;
+  padding:  0.5em 0;
+}
+
+div.heading .controls {
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+}
+
+label[for="speed"] {
+  position: relative; 
+  top: -5px;
+}
+
+div.heading {
+  position: relative;
+  z-index: 100;
+  color: #000
+}
+
+div.heading::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+  border-radius: 5vw;
+  opacity: 0.8;
+}
+
+div#game {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 400px;
+  font-size: 0px;
+}
+
+div.cell {
+  opacity: 0;
+  position: absolute; 
+  /*transform: scale(0);*/
+  /*transform-origin: bottom;*/
+  transition: transform, opacity 250ms ease-in;
+}
+
+div.cell.alive {
+  opacity: 1;
+  /*transform: scale(1);*/
+  /*transform-origin: top;*/
+}
+
+/*canvas*/
+canvas#cgame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 400px;
+  font-size: 0px;
+}
+
+
+
+

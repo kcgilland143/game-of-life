@@ -8,3 +8,4 @@ const game = new Game(settings)
 console.log('hi')
 
 game.tick()
+game.render()

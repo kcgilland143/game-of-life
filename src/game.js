@@ -53,8 +53,6 @@ class game {
         }
       }
     }
-    //changed.forEach(c => cellArray[c.pos.x][c.pos.y] = c)
-    //changed.forEach(changeCell)
     return changed
   }
 
@@ -67,6 +65,7 @@ class game {
   }
 
   render(ctx, time) {
+    console.log(this.cells[0])
   }
 }
 

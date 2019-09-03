@@ -65,6 +65,11 @@ class game {
   }
 
   render(ctx, time) {
+    this.cells.forEach(row => {
+      row.forEach(cell => {
+        
+      })
+    })
     console.log(this.cells[0])
   }
 }

@@ -15,7 +15,7 @@ class game {
     for (var x = 0; x < this.settings.size.x; x++) {
       var col = []
       for (var y = 0; y < this.settings.size.y; y++) {
-        let cc = new Cell({x:x, y:y})
+        let cc = new Cell({x:x, y:y}, null, Math.floor(Math.random() * 2))
         cc.setNeighbors(getNeighbors(cc.position, this.settings.size.x - 1, this.settings.size.y - 1))
         col.push(cc)
       }
@@ -48,7 +48,9 @@ class game {
             changed.push(new Cell(curCell.position, curCell.color, false, curCell.neighbors))
           }
         } else if (activeCount === 3) {
-          let color = Color.average(activeNeighbors.map(a => a.color))
+          let colors = activeNeighbors.map(a => a.color)
+          console.log(colors)
+          let color = Color.average(colors)
           changed.push(new Cell(curCell.position, color, true, curCell.neighbors))
         }
       }
@@ -62,15 +64,7 @@ class game {
 
   tick() {
     this.applyChanges(this.getChangedCells())
-  }
-
-  render(ctx, time) {
-    this.cells.forEach(row => {
-      row.forEach(cell => {
-        
-      })
-    })
-    console.log(this.cells[0])
+    console.log(this.cells)
   }
 }
 

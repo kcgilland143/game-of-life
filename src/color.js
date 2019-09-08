@@ -23,14 +23,14 @@ class Color {
   }
 
   static average(colors) {
-    let sum = add(colors)
+    let sum = Color.add(colors)
     let len = colors.length
     
     return new Color(
-      avg.r / len,
-      avg.g / len,
-      avg.b / len,
-      avg.a / len
+      sum.r / len,
+      sum.g / len,
+      sum.b / len,
+      sum.a / len
       )
   }
 }

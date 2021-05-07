@@ -3,18 +3,53 @@
 <head>
   <title>Game of Life</title>
   <link rel="stylesheet" type="text/css" href="css/style.css">
+    <meta charset="UTF-8">
 </head>
 <body>
   <div class="heading">
     <h1>Game of life</h1>
-    <div class="controls">
-      <form action="">
-        <label for="speed">1</label>
-        <input id="speed" type="range"
-          min=1 max="20">
-        <label for="speed">4</label>
-        <button id="play">Play</button>
-        <button id="reset">Reset</button>
+
+    <div class="controls dropdown">
+      <button
+        type="button"
+        class="dropdown__title"
+        aria-expanded="false"
+        aria-controls="controls__form">Controls</button>
+
+      <form id="controls__form" class="dropdown__menu" action="">
+        <fieldset>
+          <legend>Simulation Control</legend>
+            <div>
+              <label for="speed">slow</label>
+              <input id="speed" type="range"
+                min=1 max="20">
+              <label for="speed">fast</label>
+            </div>
+
+            <div>
+              <button id="play" class="centered">Play</button>
+            </div>
+
+            <div>
+              <button id="reset" class="centered">Reset</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Zoom Controls</legend>
+            <div>
+              <button id="pin">Zoom In</button>
+            </div>
+            <div>
+              <button id="pout">Zoom Out</button>
+            </div>
+        </fieldset>
+        
+        <fieldset>
+          <legend>Creation Controls</legend>
+            <label for="ccolor">Active Color</label>
+            <input type="color" name="ccolor" id="ccolor"/>
+        </fieldset>
       </form>
     </div>
   </div>

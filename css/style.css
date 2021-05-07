@@ -3,16 +3,51 @@ body {
 
 }
 
+.dropdown__menu {
+  position: absolute;
+  background-color: rgba(255,255,255, 0.9);
+
+  transition: transform 250ms;
+}
+
+.dropdown__menu {
+  transform: rotateX(-90deg) translateX(-50%);
+  transform-origin: top center;
+  opacity: 0.3;
+}
+
+.centered {
+  margin-left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dropdown:hover .dropdown__menu,
+.dropdown:focus-within .dropdown__menu {
+    opacity: 1;
+    transform: rotateX(0) translateX(-50%);
+    visibility: visible;
+}
+
+div.heading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 div.heading h1 {
   text-align: center; 
   margin: 0;
   padding:  0.5em 0;
 }
 
-div.heading .controls {
-  margin-left: auto;
-  margin-right: auto;
-  width: fit-content;
+div.heading .controls form{
+  display: flex;
+  justify-content: center;
+}
+
+fieldset div {
+  margin-top: 1em;
 }
 
 label[for="speed"] {

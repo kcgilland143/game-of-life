@@ -10,27 +10,82 @@ function main () {
   var compStyle = getComputedStyle(target)
   console.log(compStyle.height)
 
-  target.setAttribute('width', compStyle.width.toString())
-  target.setAttribute('height', compStyle.height.toString())
-
   var ctx = target.getContext('2d')
+  ctx.zoom = 1
 
-  var cellXAmt = 100
-  var cellYAmt = 100
+  var cellXAmt = 200
+  var cellYAmt = 200
 
-// calculate cell size based off parent element
+  let cColor = '#000' //current color for user added cells
 
   var cells = setup(target, cellXAmt, cellYAmt)
+
+  document.getElementById('pin').addEventListener('click', (e) => {
+    e.preventDefault()
+    ctx.zoom = ctx.zoom + 0.1
+    console.log('test')
+    console.log('zoom level:', ctx.zoom, getCellWidth(cell, ctx.zoom))
+
+  })
+  document.getElementById('pout').addEventListener('click', (e) => {
+    e.preventDefault()
+    ctx.zoom = ctx.zoom - 0.1
+  })
+
+  document.getElementById('ccolor').addEventListener('change', (e) => {
+    cColor = e.target.value
+    console.log(colInt(cColor))
+  })
+
+
+// calculate cell size based off parent element
+  let hx, hy
+
+  target.addEventListener('mousemove', function (e) {
+    // console.log('Hover: ', e.y, ', ', e.y)
+    let specialCell;
+    let hc;
+
+    //console.log(hc)
+    try {
+      let hc = getIntersectingCell(e.x, e.y, cell, ctx.zoom)
+      console.log(hc)
+      if (hc.x > cellXAmt || hc.y > cellYAmt) return;
+      specialCell = cells[hc.x][hc.y]
+    } catch (err) {
+      console.log(err)
+      console.dir(specialCell, hc, e.x, e.y, cell)
+    } 
+    if (!specialCell) return;
+    if (e.buttons) {
+      specialCell.color = colInt(cColor)
+      specialCell.colorString = cColor
+      specialCell.live = true
+    }
+    outlineCell(specialCell, ctx, cColor)
+  })
+
+  // target.addEventListener('scroll', (e) => {
+  //   console.log(e)
+  // }) 
 
   var speed = document.getElementById('speed')
 
   var playBtn = document.getElementById('play')
+  
   var pp = playPause(playBtn, () => {
     cells = tick(cells)
     console.log('ticked')
+
     clearGrid(target)
     renderGrid(cells, target)
+    if (specialCell) outlineCell(specialCell, ctx, "#000");
   }, speed)
+
+  speed.addEventListener('change', function (e) {
+    pp(); pp();
+  })
+
   playBtn.addEventListener('click', (event) => {
     event.preventDefault()
    //if (!started) { renderGrid(cells, target); started = true; }
@@ -45,12 +100,17 @@ function main () {
 
 }
 
+//setup method does too much.
+//
 function setup(target, cellXAmt, cellYAmt) {
   clearGrid(target)
 
   var compStyle = getComputedStyle(target)
 
   var targetWidth = parseInt(compStyle.width)
+
+  target.setAttribute('width', compStyle.width.toString())
+  target.setAttribute('height', compStyle.height.toString())
 
   var cellWidth = Math.floor(targetWidth / cellXAmt)
   var cellHeight = Math.min(Math.floor(parseInt(compStyle.height) / cellYAmt), cellWidth)
@@ -67,7 +127,7 @@ function setup(target, cellXAmt, cellYAmt) {
 
   notifyNeighbors(newCells)
 
-  renderGrid(newCells, target);
+  //renderGrid(newCells, target);
 
   return newCells
 }
@@ -102,7 +162,7 @@ function generateCells(cellXAmt, cellYAmt) {
     for (var y = 0; y < cellYAmt; y++) {
       var unique = {
         pos: {x, y},
-        live: Math.round(Math.random()),
+        live: Math.random() > 0.9,
         color: Math.floor(Math.random() * Math.exp(16, 6))
       }
       cur = Object.assign({}, cell, unique)
@@ -120,20 +180,62 @@ function colString(colInt) {
   return '#' + colInt.toString(16)
 }
 
+function colInt(colString) {
+  let s = colString.slice(1)
+  return parseInt('0x' + s)
+}
+
 function changeCell(cell) {
   //var cur = document.getElementById('cell-' + cell.pos.x + '-' + cell.pos.y)
   cell.target.style.opacity = cell.live
   cell.target.style.color = cell.colorString
 }
 
+function getCellPosition(cell, zoom) {
+  return {
+    x: (cell.pos.x * getCellWidth(cell, zoom)) + cell.offset * zoom,
+    y: cell.pos.y * getCellHeight(cell, zoom)
+  }
+}
+
+function getIntersectingCell(x, y, cell, zoom) {
+  let hx = x  - (cell.offset * zoom)
+  let hy = y 
+
+  hx = hx > 0 ? Math.floor(hx / (cell.width * zoom)) : 0
+  hy = hy > 0 ? Math.floor(hy  / (cell.height * zoom)) : 0
+  return {
+    x: hx,
+    y: hy
+  }
+    // hx = Math.floor((e.x  - cell.offset) / cell.width)
+    // hy = Math.floor(e.y / cell.height)
+}
+
+function getCellWidth(cell, zoom) {
+  let cw = cell.width * zoom
+  return cw
+}
+
+function getCellHeight(cell, zoom) {
+  return cell.height * zoom
+}
+
+function outlineCell(cell, ctx, colorString) {
+  let pos = getCellPosition(cell, ctx.zoom)
+  ctx.strokeStyle = colorString || '#000'
+  ctx.strokeRect(pos.x, pos.y, getCellWidth(cell, ctx.zoom), getCellHeight(cell, ctx.zoom))
+}
+
 function renderCell(cell, ctx) {
   if (!cell.live) return
 
-  var startX = (cell.pos.x * cell.width) + cell.offset
-  var startY = cell.pos.y * cell.height
+  let pos = getCellPosition(cell, ctx.zoom)
 
   ctx.fillStyle = cell.colorString
-  ctx.fillRect(startX, startY, cell.width, cell.height)
+  ctx.fillRect(pos.x, pos.y, 
+    getCellWidth(cell, ctx.zoom), 
+    getCellHeight(cell, ctx.zoom))
 }
 
 function renderGrid(cellArray, target) {
@@ -191,12 +293,25 @@ function tick(cellArray) {
   for (var row = 0; row < cellArray.length; row++) {
     for (var col = 0; col < cellArray[row].length; col++) {
       var curCell = cellArray[row][col]
-      var activeNeighbors = curCell.neighbors
-        .map((n) => cellArray[n[0]][n[1]])
-        .filter((cell) => {
-          return cell.live
-        })
-      var activeCount = activeNeighbors.length
+
+      let cnx, cny
+      let activeCount = 0
+      let activeNeighbors = []
+      for (var i = curCell.neighbors.length - 1; i >= 0; i--) {
+        cnx = curCell.neighbors[i]
+        cny = cnx[1]
+        cnx = cnx[0]
+        if (cellArray[cnx][cny].live) {
+          activeCount++;
+          activeNeighbors.push(cellArray[cnx][cny])
+        }
+      }
+      // var activeNeighbors = curCell.neighbors
+      //   .map((n) => cellArray[n[0]][n[1]])
+      //   .filter((cell) => {
+      //     return cell.live
+      //   })
+      // var activeCount = activeNeighbors.length
       //console.log(activeCount )
       if (curCell.live) {
         if (activeCount < 2 || activeCount > 3) {
@@ -204,7 +319,12 @@ function tick(cellArray) {
         }
       } else if (activeCount === 3) {
         let color = averageColor(activeNeighbors)
-        changed.push(Object.assign({}, curCell, {live: 1, color: color, colorString: colString(color)}))
+        changed.push(Object.assign({}, curCell, 
+          {
+            live: 1, 
+            color: color, 
+            colorString: colString(color)
+          }))
       }
     }
   }
